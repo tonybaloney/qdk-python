@@ -118,6 +118,16 @@ class TestJob(QuantumTestBase):
     def test_job_submit_microsoft_substochastic_monte_carlo(self):
         solver_type = functools.partial(microsoft.SubstochasticMonteCarlo, step_limit=280)
         self._test_job_submit(solver_type)
+    
+    def test_filtered_job(self):
+        from datetime import date, timedelta
+        from azure.quantum._client.models import JobStatus
+
+        yesterday = date.today() - timedelta(days = 1)
+        workspace = self.create_workspace()
+        jobs = workspace.list_jobs(created_after=yesterday)
+        for job in jobs:
+            print(job.id)
 
     @pytest.mark.skipif(not(os.environ.get("AZURE_QUANTUM_1QBIT", "") == "1"), reason="1Qbit tests not enabled")
     def test_job_submit_oneqbit_tabu_search(self):
